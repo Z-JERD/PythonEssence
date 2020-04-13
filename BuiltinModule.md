@@ -361,8 +361,100 @@
     encode_info = base64.urlsafe_b64encode(b'i\xb7\x1d\xfb\xef\xff') # b'abcd--__'
     
     decode_info = base64.urlsafe_b64decode(b'abcd++//')
+    
+# hashlib
+    
+    摘要算法又称哈希算法、散列算法。它通过一个函数，把任意长度的数据转换为一个长度固定的数据串（通常用16进制的字符串表示）
+    
+    用处：1.密文存储 2.校验文件一致性
 
+    
+    摘要的内容必须是bytes类型
+    
+## MD5
+    MD5是最常见的摘要算法，速度很快，生成结果是固定的128 bit字节，通常用一个32位的16进制字符串表示
+
+    1. 直接调用
+        ret = hashlib.md5("人生苦短, 我用Python".encode('utf-8')).hexdigest()
+        print(ret)                                      # 86b61bb2f18920c0de4859efbb62564b
+    2. 分块调用 update
+        1.
+            md5_obj = hashlib.md5()
+            md5_obj.update("人生苦短, 我用Python".encode('utf-8'))
+            ret = md5_obj.hexdigest()
+            print(ret)                                  # 86b61bb2f18920c0de4859efbb62564b
+            
+        2. 
+            md5_obj = hashlib.md5()
+            md5_obj.update("人生苦短, ".encode('utf-8'))
+            md5_obj.update("我用Python".encode('utf-8'))
+            ret = md5_obj.hexdigest()
+            print(ret)                                   # 86b61bb2f18920c0de4859efbb62564b
+            
+    3. 静态加salt
+         salt的值是固定的, 当两个用户使用相同的口令时,在数据库中，将存储两条相同的MD5值
+         salt = "learn Python"
+
+        ret = hashlib.md5(("人生苦短, 我用Python" + salt).encode('utf-8')).hexdigest()
+        print(ret)                                      # c297762ec358f4bff6276a22530571e0
+    
+        md5_obj = hashlib.md5(salt.encode('utf-8'))
+        md5_obj.update("人生苦短, 我用Python".encode('utf-8'))
+        ret = md5_obj.hexdigest()                       # cd34872cbba220f3a570cc50089901cf
+        print(ret)
+        
+    
+    4. 动态加盐
+        salt的值每次都随机产生
+        
+        salt = os.urandom(32)   # os.urandom(n) 随即产生n个字节的bytes，可以作为随机加密key
+        
+        salt = os.urandom(32)
+        
+        ret = hashlib.md5("人生苦短, 我用Python".encode('utf-8') + salt).hexdigest()
+        print(ret)                                      # 8a9ca19456ef04f2c3313b7f29d85304
+
+
+## SHA1
+    
+    调用SHA1和调用MD5完全类似
    
+    SHA1的结果是160 bit字节，通常用一个40位的16进制字符串表示
+    比SHA1更安全的算法是SHA256和SHA512，不过越安全的算法不仅越慢，而且摘要长度更长
+    
+    import hashlib
+    import os
+
+    salt = os.urandom(32)
+    ret = hashlib.sha1("人生苦短, 我用Python".encode('utf-8') + salt).hexdigest()
+    print(ret) 
+    
+## 判断两个文件的一致性
+    
+    import os
+    import hashlib
 
 
+    def file_md5(filename):
+
+        filesize = os.path.getsize(filename)    # 获取文件的大小
+
+        with open(filename, 'rb') as f:
+            md5_obj = hashlib.md5()
+            while filesize:                      # 每次读10kb 知道filesize被读完
+                content = f.read(1024 * 10)      
+                md5_obj.update(content)
+                filesize -= len(content)    
+
+            file_md5 = md5_obj.hexdigest()
+
+        return file_md5
+
+
+    def judge(file1, file2):
+
+        file1_md5 = file_md5(file1)
+        file2_md5 = file_md5(file2)
+
+        return file1_md5 == file2_md5
 
