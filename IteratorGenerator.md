@@ -327,29 +327,6 @@
                 print(i)     5  --------
 
             for不报错的原因是内部处理了迭代结束的这种情况
-        
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 
 ## 生成器生命周期
     生成器在其生命周期中，会有如下四个状态:
@@ -377,78 +354,6 @@
         print(next(gen))
         gen.close()                             #  手动关闭/结束生成器
         print(getgeneratorstate(gen))           #   GEN_CLOSED
- 
- 
- 
-        
-### 3.send
-    1.send和next的功能是一样的 g.send(None) 必须有参数
-    2.给上一个yield整体发送一个返回值
-    3.不能给最后一个yield发送返回值
-    4.获取第一个值时，不能用send，只能用next     
-    
-    def func():
-        print("=======")
-        yield 222
-        print("-------")
-        count = yield 'cvx'
-        print(count)
-        yield 444
-        yield 555
-    g = func()
-    
-    print(g.__next__())            =======  222
-    print(g.send(None))            -------  cvx
-    print(g.send("+++++++"))       +++++++ 444
-    print(g.send(None))            555
-    
-    def myList(num):  # 定义生成器
-        now = 0  # 当前迭代值，初始为0
-        while now < num:
-            val = (yield now)  # 返回当前迭代值，并接受可能的send发送值；yield在下面会解释
-            print(val)
-            now = now + 1 if val is None else val  # val为None，迭代值自增1，否则重新设定当前迭代值为val
-    my_list = myList(5)             # 得到一个生成器对象
-    print(my_list.__next__())       # 0
-    print(my_list.__next__())       #  None 1
-    my_list.send(3)                 #1 3
-    print(my_list.__next__())       # None 4
-
-### yield from
-    yield from 后面可以跟的式子有 生成器  元组 列表等可迭代对象以及range（）函数产生的序列
-    yield from  generator ,实际上就是返回另外一个生成器
-    相当于:
-        for i in generator : yield i
-        
-    def generator1():
-    item = range(7,9)
-    for i in item:
-        yield i
-
-    def generator2():
-        yield '========'
-        yield from generator1()
-        yield from ["---","*********","+++++++"]
-        yield from range(1,3)
-
-    next取值：
-        obj = generator2()
-        print(obj.__next__())            ========
-        print(obj.__next__())            7
-        print(obj.__next__())            8
-        print(obj.__next__())            ---
-    for 循环
-        for i in generator2() :
-            print(i)
-            
-        ========
-        7
-        8
-        ---
-        *********
-        +++++++
-        1
-        2
 
 ### 基于面向对象实现迭代器
     class Fib(object):
