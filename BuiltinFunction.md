@@ -708,18 +708,31 @@
     
 ## 读取大文件：
 ### 1.分块读取：将大文件分割成若干小文件处理，处理完每个小文件后释放该部分内存。用iter 和 yield来实现
-    def read_in_chunks(filePath, chunk_size=1024*1024):
-            file_object = open(filePath)
-            while True:
-                chunk_data = file_object.read(chunk_size)
-                if not chunk_data:
-                    break
-                yield chunk_data
+    def read_from_file(filename, block_size = 1024 * 8):
+            with open(filename, "r") as fp:
+                while True:
+                    chunk = fp.read(block_size)
+                    if not chunk:
+                        break
+
+                    yield chunk
 
     if __name__ == "__main__":
         filePath = './path/filename'
         for chunk in read_in_chunks(filePath):
             pass
+            
+    上面的代码，功能上已经没有问题了，但是代码看起来代码还是有些臃肿。
+
+    借助偏函数 和 iter 函数可以优化一下代码
+
+    from functools import partial
+
+    def read_from_file(filename, block_size = 1024 * 8):
+        with open(filename, "r") as fp:
+            for chunk in iter(partial(fp.read, block_size), ""):
+                yield chunk
+                    
 ## With open()
     with语句打开和关闭文件，包括抛出一个内部块异常。for line in f文件对象f视为一个迭代器，会自动的采用缓冲IO和内存管理
             with open(file_path, 'r') as f:
