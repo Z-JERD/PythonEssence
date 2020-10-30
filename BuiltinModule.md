@@ -23,6 +23,218 @@
 
     # 打印十六进制的字符
         ret = string.hexdigits
+        
+# Decimal
+
+## Decimal类型的优点
+    
+    1. Decimal类型可以非常精确地在计算机中存储
+    
+      浮点数计算：1.1 + 2.2                   # 3.3000000000000003
+      
+      Decimal类型则不会出现这种情况:
+        Decimal("1.1") + Decimal("2.2")      # Decimal('3.3')
+      
+    2. Decimal类型会自动保留小数点后面不需要的0
+    
+        浮点数计算：1.20 + 1.30                                      # 2.5
+        
+        Decimal：Decimal("1.20") + Decimal("1.30")                   # Decimal('2.50')
+        
+    3. Decimal类型可以根据需要自己设置小数点后精度。通过getcontext().prec = x
+    
+    缺点:
+        精度提升的同时，肯定带来的是性能的损失。在对数据要求特别精确的场合（例如财务结算），这些性能的损失是值得的。
+        但是如果是大规模的科学计算，就需要考虑运行效率了。毕竟原生的float比Decimal对象肯定是要快很多的
+        
+## Decimal运算
+
+### 1. 传值：
+
+    可以传递给Decimal整型或者字符串参数，但不能是浮点数据，因为浮点数据本身就不准确
+    
+    例: 
+        Decimal(5.55)*100                          # Decimal('554.9999999999999822364316060')
+        
+        Decimal(1.1) + Decimal(2.2)                # Decimal('3.300000000000000266453525910')
+        
+    传入整数：
+    
+        Decimal(11.00)                             # Decimal('11')
+        
+        Decimal(2) + Decimal(3)                    # Decimal('5')
+        
+    传入str:
+    
+        Decimal(str(1.1)) + Decimal(str(2.2))      #  Decimal('3.3')
+        
+        Decimal(str(5.55))*100                     # Decimal('555.00')
+            
+### 2.  decimal & int & float 运算
+
+    from decimal impoer Decimal
+    
+    float & float
+            
+            a, b = 1.2, 2.3
+            print( a + b)                   # 3.5
+            
+            a, b = 1.2, 2.32
+            print( a + b)                   # 3.5199999999999996
+            
+    int & float
+            
+            a, b = 2, 5.0
+            print( a + b)                  # 7.0
+            
+            a, b = 2, 5.431
+            print( a + b)                 # 7.431
+            
+    int & deciaml
+            
+            a, b = 1, Decimal(12)
+            print( a + b)                 # 13
+            
+            a, b = 1, Decimal("12")
+            print( a + b)                # 13
+            
+            a, b = 1, Decimal(12.05)
+            print( a + b)                # 13.05000000000000071054273576
+            
+            a, b = 1, Decimal("12.05")
+            print( a + b)                # 13.05
+            
+    flaot & deciaml
+            a, b = 1.1, Decimal(12.05)
+            TypeError: unsupported operand type(s) for +: 'float' and 'decimal.Decimal'
+            
+            a, b = 1.0, Decimal(12.05)
+            TypeError: unsupported operand type(s) for +: 'float' and 'decimal.Decimal'
+ 
+### 3. Decimal 结果转化为string
+    
+    str(Decimal('3.40').quantize(Decimal('0.0')))                  3.4 <class 'str'>
+    
+### 4.浮点数据转换为Decimal类型
+
+    Decimal.from_float(12.222)                       # Decimal('12.2219999999999995310417943983338773250579833984375')
+    
+##  精度 context
+    
+    可以用getcontext()函数得到当前运算环境的参数，直接打印 print (get context())
+    
+     Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999, Emax=999999, capitals=1, clamp=0, 
+     flags=[Inexact, FloatOperation, Rounded], traps=[InvalidOperation, DivisionByZero, Overflow])
+     
+     prec精度为28，是默认值，可以通过getcontext().prec = 10这样来设置自己想要的精度
+     rounding的规则是ROUND_HALF_EVEN
+     
+     Decimal(1)/Decimal(7)                             #  Decimal('0.1428571428571428571428571429')
+     
+     设置精度为6:
+     
+     decimal.getcontext().prec = 6
+     
+     Decimal(1)/Decimal(7)                                 # Decimal('0.142857')
+     
+## 四舍五入 保留小数
+
+    from decimal import *
+
+### 1. 未指定ROUND
+    
+        1. Decimal(50).quantize(Decimal('0.01'))           # Decimal('50.00')
+        
+        2. Decimal('7.325').quantize(Decimal('1.'))        # Decimal('7')
+        
+        3. Decimal('8.545').quantize(Decimal('0.01'))      # Decimal('8.54')
+        
+        4. Decimal('8.5451').quantize(Decimal('0.01'))     # Decimal('8.55')
+        
+        5. Decimal('8.535').quantize(Decimal('0.01'))      # Decimal('8.54')
+        
+        默认 ROUND 为: ROUND_HALF_EVEN
+        
+### 2.指定ROUND
+    
+    1. ROUND_UP：舍弃小数部分非0时，在前面增加数字
+    
+    2. ROUND_DOWN：舍弃小数部分，从不在前面数字做增加操作
+    
+    3. ROUND_CEILING：如果Decimal为正，则做ROUND_UP操作；如果Decimal为负，则做ROUND_DOWN操作；
+
+    4. ROUND_FLOOR： 如果Decimal为负，则做ROUND_UP操作；如果Decimal为正，则做ROUND_DOWN操作；
+    
+    5. ROUND_HALF_DOWN：如果舍弃部分>.5，则做ROUND_UP操作；否则，做ROUND_DOWN操作；
+    
+    6. ROUND_HALF_UP：如果舍弃部分>=.5，则做ROUND_UP操作；否则，做ROUND_DOWN操作；
+    
+    7. ROUND_HALF_EVEN：如果舍弃部分左边的数字是奇数，则做ROUND_HALF_UP操作；若为偶数，则做ROUND_HALF_DOWN操作；
+    
+#### 1. ROUND_UP  & ROUND_DOWN
+
+    Decimal('8.532').quantize(Decimal('0.01'), rounding="ROUND_UP")            # 8.54
+    
+    Decimal('8.530').quantize(Decimal('0.01'), rounding="ROUND_UP")            # 8.53
+    
+    Decimal('-8.532').quantize(Decimal('0.01'), rounding="ROUND_UP")           # -8.54
+    
+    Decimal('8.532').quantize(Decimal('0.01'), rounding="ROUND_DOWN")         # 8.53
+     
+    Decimal('-8.532').quantize(Decimal('0.01'), rounding="ROUND_DOWN")        # -8.53
+    
+#### 2.ROUND_CEILING & ROUND_FLOOR
+
+    Decimal('8.532').quantize(Decimal('0.01'), rounding="ROUND_CEILING")       # 8.54
+    
+    Decimal('-8.532').quantize(Decimal('0.01'), rounding="ROUND_CEILING")      # -8.53
+    
+    Decimal('8.532').quantize(Decimal('0.01'), rounding="ROUND_FLOOR")         # 8.53
+    
+    Decimal('-8.532').quantize(Decimal('0.01'), rounding="ROUND_FLOOR")        # -8.54  
+    
+#### 3.ROUND_HALF_DOWN & ROUND_HALF_UP
+
+    Decimal('8.535').quantize(Decimal('0.01'), rounding="ROUND_HALF_UP")       # 8.54
+    
+    Decimal('8.534').quantize(Decimal('0.01'), rounding="ROUND_HALF_UP")       # 8.53
+    
+    Decimal('8.535').quantize(Decimal('0.01'), rounding="ROUND_HALF_DOWN")     # 8.53
+    
+    Decimal('8.5350').quantize(Decimal('0.01'), rounding="ROUND_HALF_DOWN")    # 8.53
+    
+    Decimal('8.5351').quantize(Decimal('0.01'), rounding="ROUND_HALF_DOWN")    # 8.54
+    
+    Decimal('8.534').quantize(Decimal('0.01'), rounding="ROUND_HALF_DOWN")     # 8.53
+    
+    Decimal('8.536').quantize(Decimal('0.01'), rounding="ROUND_HALF_DOWN")     # 8.54
+
+#### 4. ROUND_HALF_EVEN
+
+    Decimal('8.535').quantize(Decimal('0.01'), rounding="ROUND_HALF_EVEN")     # 8.54
+    
+    Decimal('8.545').quantize(Decimal('0.01'), rounding="ROUND_HALF_EVEN")     # 8.54
+    
+    Decimal('8.5451').quantize(Decimal('0.01'), rounding="ROUND_HALF_EVEN")    # 8.55
+
+
+## Python 序列化Decimal类型对象
+
+    json 不能序列化 Decimal, datetime类型对象
+    
+    import json 
+    
+    from decimal import *
+    
+    dic = {"name": "jerd", "account": Decimal("500.56"))}
+    
+    json.dumps(dic)                                       #  TypeError: Object of type 'Decimal' is not JSON serializable
+    
+    解决方案：
+        
+        利用dumps的default, 遇到不能序列化的数据，转换成指定类型数据
+        
+        json.dumps(dic,default=str)                      # '{"name": "jerd", "account": "500.56"}'
     
     
 # traceback 异常处理
@@ -44,11 +256,11 @@
             raise
     
         else:
-            # 没有异常则执行此处代码
+            # 没有异常则执行此处代码  （try里没有return执行，有return 不执行）
             print('Run into else only when everything goes well')
     
         finally:
-            # 不论是否发生异常，均会执行
+            # 不论是否发生异常，均会执行 （无论try里是否有return均会执行）
             print('Always run into finally block.')
 
     
