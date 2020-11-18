@@ -84,20 +84,6 @@
                 application/json                                        告诉服务端POST提交的是JSON字符串
                 text/xxx                                                 文本数据
                 
-### application/xml 、 text/xml、text/html、text/plain的区别
-    1、text/html是html格式的正文
-    2、text/plain是无格式正文
-    3、text/xml忽略xml头所指定编码格式而默认采用us-ascii编码
-    4、application/xml会根据xml头指定的编码格式来编码
-    
-### GET和POST请求的区别： 
-    1. GET把参数包含在URL中，POST通过request body传递参数 GET的参数是明文传输，不安全
-    2. GET请求会被浏览器主动cache，而POST不会
-    3. GET请求只能进行url编码，而POST支持多种编码方式
-    4. GET请求在URL中传送的参数是有长度限制的（2048），而POST没有
-    5. 对参数的数据类型，GET只接受ASCII字符，而POST没有限制   
-            
-            
 ## HTTP响应
     响应由服务器向客户端端发出, 由4部分内容组成：
         响应头\r\n\r\n响应体
@@ -118,6 +104,58 @@
                 Server	                    服务器的名称	                                 Server: nginx/1.6.3
         3. 空行(\r\n\r\n)  
         4. 响应体(Response  Body)
+	
+## application/xml 、 text/xml、text/html、text/plain的区别
+
+    1、text/html是html格式的正文
+    2、text/plain是无格式正文
+    3、text/xml忽略xml头所指定编码格式而默认采用us-ascii编码
+    4、application/xml会根据xml头指定的编码格式来编码
+ 
+## GET和POST请求的不同
+
+    GET和POST本质上就是TCP链接，并无差别。但是由于HTTP的规定和浏览器/服务器的限制，导致他们在应用过程中体现出一些不同
+
+### GET和POST本质上没有区别：
+        
+    GET和POST是HTTP协议中的两种发送请求的方法，HTTP的底层是TCP/IP， 所以GET和POST的底层也是TCP/IP，也就是说，
+    GET/POST都是TCP链接。GET和POST能做的事情是一样一样的。你要给GET加上request body，给POST带上url参数，技术上是完全行的通的
+    
+    TCP就像汽车，我们用TCP来运输数据，但是如果路上跑的全是看起来一模一样的汽车，那这个世界看起来是一团混乱，
+    送急件的汽车可能被前面满载货物的汽车拦堵在路上，整个交通系统一定会瘫痪。为了避免这种情况发生，交通规则HTTP诞生了
+    
+    HTTP给汽车运输设定了好几个服务类别，有GET, POST, PUT, DELETE等等，HTTP规定，当执行GET请求的时候，
+    要给汽车贴上GET的标签（设置method为GET），而且要求把传送的数据放在车顶上（url中）以方便记录。
+    如果是POST请求，就要在车上贴上POST的标签，并把货物放在车厢里。
+    当然，你也可以在GET的时候往车厢内偷偷藏点货物，但是这是很不光彩；也可以在POST的时候在车顶上也放一些数据，让人觉得傻乎乎的。
+    
+    不同的浏览器（发起http请求）和服务器（接受http请求）就是不同的运输公司。虽然理论上，你可以在车顶上无限的堆货物（url中无限加参数）
+    
+    但是运输公司可不傻，装货和卸货也是有很大成本的，他们会限制单次运输量来控制风险，数据量太大对浏览器和服务器都是很大负担。
+    （大多数）浏览器通常都会限制url长度在2K个字节，而（大多数）服务器最多处理64K大小的url。超过的部分，恕不处理
+    
+    如果你用GET服务，在request body偷偷藏了数据，不同服务器的处理方式也是不同的，有些服务器会帮你卸货，
+    读出数据，有些服务器直接忽略，所以，虽然GET可以带request body，也不能保证一定能被接收到哦
+   
+    
+### 应用过程上的区别：
+
+    1. GET把参数包含在URL中，POST通过request body传递参数 GET的参数是明文传输，不安全
+    2. GET请求会被浏览器主动cache，而POST不会
+    3. GET请求只能进行url编码，而POST支持多种编码方式
+    4. GET请求在URL中传送的参数是有长度限制的（2048），而POST没有
+    5. 对参数的数据类型，GET只接受ASCII字符，而POST没有限制  
+
+### GET和POST 重大区别：
+
+    GET产生一个TCP数据包；POST产生两个TCP数据包。
+    
+    对于GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200
+    对于POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok
+    
+    POST需要两步，时间上消耗的要多一点，看起来GET比POST更有效 但是 在网络环境好的情况下，发一次包的时间和发两次包的时间差别基本可以无视。
+    而在网络环境差的情况下，两次包的TCP在验证数据包完整性上，有非常大的优点。并不是所有浏览器都会在POST中发送两次包，Firefox就只发送一次
+
 
  ## HTTP 特性
     HTTP 最凸出的优点:
