@@ -1,5 +1,136 @@
 # 网络原理
 
+#  TCP/IP五层模型 OSI七层模型
+## 参考文档：https://mp.weixin.qq.com/s?__biz=Mzg3MjA4MTExMw==&mid=2247495857&idx=2&sn=7c036f2e6c5a2ec3251bf8a657f5e301
+
+## 五层模型 VS 七层模型
+
+   ![avatar](https://images2015.cnblogs.com/blog/705728/201604/705728-20160424234825491-384470376.png)
+   
+## TCP/IP 协议簇
+
+    TCP/IP 协议说的不仅仅只是 TCP 和 IP 这两种协议，实际上，TCP/IP 指的是协议簇
+    
+    TCP/IP 协议有以下协议：
+
+  ![avatar](https://mmbiz.qpic.cn/mmbiz_png/A3ibcic1Xe0iaTicuU6kBxkISjlPjd8lZLl4icmhUtRazAIOiaGSq7q85QA7B6OFQbk113W4kWOe0zeafUeC1SlN4D0A/640)
+  
+
+## 每层协议
+
+![avatar](https://images2015.cnblogs.com/blog/705728/201604/705728-20160424234824085-667046040.png)
+
+![avatar](https://images2015.cnblogs.com/blog/705728/201604/705728-20160424234827195-1493107425.png)
+### 1. 通信链路层
+
+    通信链路层也可以分为 物理层 和 数据链路层
+
+    1. 物理层
+    
+        物理层是 TCP/IP 的最底层是负责传输的硬件，这种硬件就相当于是以太网或电话线路等物理层的设备
+        
+        作用：
+            定义物理设备标准,网线的接口类型
+        
+        物理设备：
+            中继器 集线器 双绞线
+        
+    2. 数据链路层
+        
+        作用：
+            数据链路层定义了在单个链路上如何传输数据
+            
+        物理设备：
+             网桥 交换机 网卡
+             
+### 2. 网络层
+
+        作用：
+            
+            网络层主要使用 IP协议， 将分组数据包发送到目标主机
+            
+        物理设备：
+            
+            三层交换机  路由器
+            
+        网络层还有一种协议就是 ICMP，因为 IP 在数据包的发送过程中可能会出现异常，当 IP 数据包因为异常而无法到达目标地址时，
+        需要给发送端发送一个异常通知，ICMP 的主要功能就在于此了。鉴于此情况，ICMP 也可以被用来诊断网络情况
+        
+### 3. 传输层
+        
+     传输层就好像高速公路一样，连接两个城市的道路
+     
+     传输层的协议主要分为面向有连接的协议 TCP 和面向无连接的协议 UDP
+     
+     作用：
+            
+           让应用层的应用程序之间完成通信和数据交换
+            
+        物理设备：
+            
+            四层交换机  四层路由器 
+
+### 4. 应用层
+
+    OSI 标准模型中的会话层、表示层都归为了应用层
+    
+    作用：
+        为应用软件提供服务
+        
+###  ARP协议在哪一层：
+
+    在TCP/IP模型中，ARP协议属于IP层；在OSI模型中，ARP协议属于链路层
+    
+    TCP/IP模型中，所有定义的协议至少是在网络层
+    
+    OSI的标准,当数据向下传递时,每层会加上自己的信息,各层互不干扰.这样当网络层的IP包进入链路层时,
+    链路层该如何加这个头部的目标信息呢?它要依靠ARP协议来完成.显然如何加链路头并不是网络层的功能.
+    而且，ARP协议工作时，并不使用IP的包头。所以也有很多人说，ARP是链路层的
+        
+## 数据包的发送历程
+
+### 数据包结构
+   
+   ![avatar](https://mmbiz.qpic.cn/mmbiz_png/A3ibcic1Xe0iaTicuU6kBxkISjlPjd8lZLl4ibeianUVm2oBCsuRfzDo8bWh2ic9wQw84lwiaia5xX42OeeGwpRuIm9nP0A/640)
+   
+    每个分层中，都会对所发送的数据增加一个 首部，这个首部中包含了该层必要的信息
+    
+### 数据包发送历程
+    
+    假设主机 A 和主机 B 进行通信，主机 A 想要向主机 B 发送一个数据包， 经历一下步骤
+    
+#### 1. 应用层的处理
+    
+    主机 A 也就是用户点击了某个应用或者打开了一个聊天窗口输入了cxuan，然后点击了发送 ，
+    应用层还需要对这个数据包进行处理，包括字符编码、格式化等等， ，这一层其实是 OSI 中表现层做的工作，只不过在 TCP/IP 协议中都归为了应用层
+    
+    数据包在发送的那一刻建立 TCP 连接，这个连接相当于通道，在这之后其他数据包也会使用通道传输数据
+    
+#### 2. 传输层的处理
+
+    了描述信息能准确的到达另一方，使用 TCP 协议来进行描述 TCP 会根据应用的指示，负责建立连接、发送数据和断开连接
+    
+    TCP 会在应用数据层的前端附加一个 TCP 首部字段，TCP 首部包含了源端口号 和 目的端口号，
+    这两个端口号用于表明数据包是从哪里发出的，需要发送到哪个应用程序上
+    
+#### 3. 网络层的处理
+    
+    网络层主要负责处理数据包的是 IP 协议，IP 协议将 TCP 传过来的 TCP 首部和数据结合当作自己的数据，
+    并在 TCP 首部的前端加上自己的 IP 首部， IP 首部包含目的和源地址，紧随在 IP 首部的还有用来判断后面是 TCP 还是 UDP 的信息
+    
+#### 4. 通信链路层的处理
+
+    经由 IP 传过来的数据包，以太网会给数据附上以太网首部并进行发送处理。以太网首部包含接收端的 MAC 地址、
+    发送端的 MAC 地址以及标志以太网类型的以太网数据协议
+    
+### 完整处理：
+   
+   ![avatar](https://mmbiz.qpic.cn/mmbiz_png/A3ibcic1Xe0iaTicuU6kBxkISjlPjd8lZLl4IyaULRwFfRLzkR0vzovAfoe8aIJf6rKljtb276ya14bKxovEckticeg/640)
+   
+    数据包经过每层后，该层协议都会在数据包附上包首部，一个完整的包首部图如下所示
+   
+   ![avatar](https://mmbiz.qpic.cn/mmbiz_png/A3ibcic1Xe0iaTicuU6kBxkISjlPjd8lZLl4oicgLcibARhfxUxpyXsyYELOLQJTqZSEP2A8K21WfwgpTXWyQPmtrAxA/640)
+
 # HTTP(超文本传输协议)
 ## 参考文档：https://mp.weixin.qq.com/s/qzzEgRpt9f-UlTLnWGrJEw
 
