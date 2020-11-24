@@ -239,8 +239,13 @@
 ## application/xml 、 text/xml、text/html、text/plain的区别
 
     1、text/html是html格式的正文
+    	浏览器在获取到这种文件时会自动调用html的解析器对文件进行相应的处理
+    
     2、text/plain是无格式正文
+    	将文件设置为纯文本的形式，浏览器在获取到这种文件时并不会对其进行处理
+    
     3、text/xml忽略xml头所指定编码格式而默认采用us-ascii编码
+    
     4、application/xml会根据xml头指定的编码格式来编码
  
 ## GET和POST请求的不同
