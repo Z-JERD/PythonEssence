@@ -747,3 +747,152 @@
         面对百万行的大型数据使用with open 是没有问题的，但是这里面参数的不同也会导致不同的效率。
         参数为”rb”时的效率是”r”的6倍。由此可知二进制读取依然是最快的模式
 
+# 上下文管理器（contextor）：
+    
+    上下文管理器的常用于一些资源的操作，需要在资源的获取与释放相关的操作，一个典型的例子就是数据库的连接，查询，关闭处理
+    
+## 上下文概念：
+    
+    实现了上下文协议的函数/对象即为上下文管理器， 上下文管理协议则是__enter__和__exit__  
+    
+    上下文管理器必须实现如下两个方法：
+    
+    1. __enter__(self)：
+        
+        进入上下文管理器自动调用的方法，该方法会在 with as 代码块执行之前执行。如果 with 语句有 as子句，
+        那么该方法的返回值会被赋值给 as 子句后的变量；该方法可以返回多个值，因此在 as 子句后面也可以指定多个变量
+        （多个变量必须由“()”括起来组成元组）。
+    
+    2. __exit__（self, exc_type, exc_value, exc_traceback）：
+        
+        退出上下文管理器自动调用的方法。该方法会在 with as 代码块执行之后执行。如果 with as 代码块成功执行结束，
+        程序自动调用该方法，调用该方法的三个参数都为 None：如果 with as 代码块因为异常而中止，程序也自动调用该方法，
+        使用 sys.exc_info 得到的异常信息将作为调用该方法的参数。
+        
+## 基于类实现上下文管理器
+
+    class ContexTor(object):
+    
+        def __init__(self, name):
+    
+            print("---------------------: 初始化")
+    
+            self.name = name
+    
+        def demo(self):
+    
+            return list(range(20))
+    
+        def __enter__(self):
+    
+            """
+            出现with语句,对象的__enter__被触发,有返回值则赋值给as声明的变量
+            :return:
+            """
+    
+            print("---------------------: enter")
+    
+            return self
+    
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            """
+            with中代码块执行完毕时执行
+            with语句中代码块出现异常，则with后的代码都无法执行
+            如果__exit()返回值为True,那么异常会被清空，with后的语句正常执行
+    
+            :param exc_type: 异常类型
+            :param exc_val: 异常值
+            :param exc_tb:
+            :return:
+            """
+    
+            """"""
+    
+            print("---------------------: exit")
+    
+            print(exc_type)
+            print(exc_val)
+            print(exc_tb)
+    
+            print("ContexTor name is %s " % self.name)
+    
+            return
+    
+    
+    if __name__ == '__main__':
+    
+        with ContexTor("管理器测试") as obj:
+    
+            a = [11, 33]
+            print("---------------------: 代码块")
+    
+            obj.demo()
+    
+        print("---------------------: 额外值")
+
+
+### 1. 正常运行：
+    ---------------------: 初始化
+    ---------------------: enter
+    ---------------------: 代码块
+    ---------------------: exit
+    None
+    None
+    None
+    ContexTor name is 管理器测试 
+    ---------------------: 额外值
+    
+### 2. with中有异常 with后的代码不再执行
+
+    Traceback (most recent call last):
+    ---------------------: 初始化
+      File "C:/Users/86134/Desktop/ownfile/note/demo_debug.py", line 58, in <module>
+        a[2]
+    IndexError: list index out of range
+    ---------------------: enter
+    ---------------------: 代码块
+    ---------------------: exit
+    <class 'IndexError'>
+    list index out of range
+    <traceback object at 0x000001E67E4D9B48>
+    ContexTor name is 管理器测试 
+    
+### 3. __exit__ 返回True
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        with中代码块执行完毕时执行
+        with语句中代码块出现异常，则with后的代码都无法执行
+        如果__exit()返回值为True,那么异常会被清空，with后的语句正常执行
+
+        :param exc_type: 异常类型
+        :param exc_val: 异常值
+        :param exc_tb:
+        :return:
+        """
+
+        """"""
+
+        print("---------------------: exit")
+
+        print(exc_type)
+        print(exc_val)
+        print(exc_tb)
+
+        print("ContexTor name is %s " % self.name)
+
+        return True
+        
+    有异常，with后的语句仍正常执行：
+        ---------------------: 初始化
+        ---------------------: enter
+        ---------------------: 代码块
+        ---------------------: exit
+        <class 'IndexError'>
+        list index out of range
+        <traceback object at 0x000002536F6D9B48>
+        ContexTor name is 管理器测试 
+        ---------------------: 额外值
+ 
+
+
