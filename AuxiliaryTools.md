@@ -121,3 +121,94 @@
                         sha1Obj.update(buf)
                     else:
                         break
+                        
+# 安装 gmpys 库：
+## 参考文档：https://blog.csdn.net/dongyanwen6036/article/details/77183346   https://www.jianshu.com/p/37565f0ffdc8
+    
+## Windows：
+        
+        https://blog.csdn.net/x_yhy/article/details/83903367 
+    
+## Centos 安装gmpy库
+        
+        1、安装gmp开发包
+
+            yum install -y gmp-devel
+
+        2、安装python开发包
+
+            yum install -y python-devel
+
+        3、安装gmpy
+
+            pip install gmpy
+ 
+## Centos 安装gmpy2库   
+
+### 创建目录        
+    
+    mkdir -p $HOME/src
+    mkdir -p $HOME/static
+    
+    cd $HOME/src
+    
+### 1. gmp下载：
+            
+    1. 下载压缩包：wget https://gmplib.org/download/gmp/gmp-6.2.1.tar.bz2
+    
+    2. 解压： tar -jxvf gmp-6.2.1.tar.bz2
+    
+    3. cd gmp-6.2.1
+    
+    4. ./configure --prefix=$HOME/static --enable-static --disable-shared --with-pic 
+    
+    5. make && make check && make install
+            
+### 2. mpfr下载： 
+    
+    1. wget https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.bz2
+    
+    2. tar -jxvf mpfr-4.1.0.tar.bz2
+    
+    3. cd mpfr-4.1.0
+    
+    4. ./configure --prefix=$HOME/static --enable-static --disable-shared --with-pic --with-gmp=$HOME/static
+    
+    5.  make && make check && make install
+            
+            
+### 3. mpc下载：
+
+        1. wget https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz
+        
+        2. tar -zxvf mpc-1.2.1.tar.gz
+        
+        3. cd mpc-1.2.1
+        
+        4. ./configure --prefix=$HOME/static --enable-static --disable-shared --with-pic --with-gmp=$HOME/static --with-mpfr=$HOME/static
+        
+        5. make && make check && make install
+            
+### 4.安装gmpy2：
+        
+    github项目：https://github.com/aleaxit/gmpy
+
+    现在新的版本（2-2.1.0b1以上版本）在执行python setup.py build_ext --static=$HOME/static install
+
+    会报错error: option --static must not have an argument
+    
+    解决法子1：
+
+        找releases版本（2-2.1.0a1以下版本）来安装
+        
+        v=2-2.1.0a1
+        cd $HOME/src
+        wget https://github.com/aleaxit/gmpy/releases/download/gmpy${v}/gmpy${v}.tar.gz
+        
+        tar -zxvf gmpy2-2.1.0a1.tar.gz
+        
+        python setup.py build_ext --static=$HOME/static install
+        
+    解决方法2：
+        
+        python setup.py build_ext --static-dir=$HOME/static install
