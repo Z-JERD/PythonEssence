@@ -245,6 +245,8 @@
     def div(a, b):
         try:
             print(a / b)
+            
+            return 'from_try'
     
         except ZeroDivisionError:
             # 发生异常则执行此处代码
@@ -262,6 +264,8 @@
         finally:
             # 不论是否发生异常，均会执行 （无论try里是否有return均会执行）
             print('Always run into finally block.')
+            
+            return 'from_finally'
 
     
     
@@ -274,6 +278,8 @@
     4.except语句后面如果不指定异常类型，则默认捕获所有异常
     
     5.如果要捕获异常后要重复抛出，请使用raise，后面不要带任何参数或信息。
+    
+    6. 返回值为：from_finally  函数的返回值由最后执行的 return 语句决定. 由于 finally 子句一定会执行, 所以 finally 子句中的 return 将始终是最后执行的语句
 
 ## raise抛异常
     1. 在try---except中使用raise, 不需要使用参数
