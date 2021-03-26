@@ -24,6 +24,44 @@
     # 打印十六进制的字符
         ret = string.hexdigits
         
+# Counter
+    
+    from collections import Counter
+
+## 统计数量
+
+    info = [1, 4, 2, 3, 2, 3, 4, 2]
+
+    print(Counter(info))
+    print(dict(Counter(info)))      # {1: 1, 4: 2, 2: 3, 3: 2}
+
+### 查询数组中出现次数最多的元素
+
+    print(dict(Counter(info).most_common(1)))   # {2: 3} n:输出几个出现次数最多的元素
+
+    print(dict(Counter('abracadabra').most_common(2)))
+
+## 数值计算 相减，如果小于等于0，自动删去
+
+    v1 = Counter({"a": 2, "b": 5, "c": 4})
+    v2 = Counter({"a": 3, "b": 2})
+
+###求和
+    
+    print(dict(v1 + v2))         # {'a': 5, 'b': 7, 'c': 4}
+
+### 求差值
+
+    print(dict(v1 - v2))         # {'b': 3, 'c': 4}
+
+### 求相同key的最小值
+
+    print(dict(v1 & v2))         # {'a': 2, 'b': 2} 
+
+### 求各个key的最大值
+
+    print(dict(v1 | v2))         # {'a': 3, 'b': 5, 'c': 4}
+        
 # Decimal
 
 ## Decimal类型的优点
