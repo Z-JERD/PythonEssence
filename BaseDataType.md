@@ -369,7 +369,59 @@
                     dic = OrderedDict(sorted(dic_key.items(),key=lambda x : x[0], reverse=True))
                 2.将dic_value按照value值降序
                    dic = OrderedDict(sorted(dic_value.items(),key=lambda x : x[1], reverse=True))
+## 字典转化成对象
+    
+    class ObjDict(dict):
+        """通过.的形式来访问字典元素"""
 
+        def __init__(self, info=None):
+
+            if info and isinstance(info, dict):
+
+                for k, v in info.items():
+                    if isinstance(v, (list, tuple)):
+                        setattr(self, k, [ObjDict(x) if isinstance(x, dict) else x for x in v])
+                    else:
+                        setattr(self, k, ObjDict(v) if isinstance(v, dict) else v)
+
+        def __getattr__(self, name):
+            try:
+                return self[name]
+            except KeyError:
+                raise AttributeError(name)
+
+        def __setattr__(self, name, value):
+            self[name] = value
+
+
+    if __name__ == "__main__":
+
+        data = {
+            "cinema_name": "武汉环艺新民众乐园",
+            "cinema_code": 42015101,
+            "chain": 223484,
+            "cinema_address": {
+                "sheng": 420000000,
+                "shi": 420100000,
+                "xian": 420103000,
+                "zhen": 420103002,
+                "sheng_s": "湖北省",
+                "shi_s": "武汉市",
+                "xian_s": "江汉区",
+                "zhen_s": "花楼街街道",
+                "street": "中山大道704号武汉环艺影城5楼办公室"
+                },
+            "hall_name": ["1号厅", "2号厅", "3号厅"]
+        }
+
+        application = ObjDict(data)
+
+        print(application.hall_name)
+
+        print(application.cinema_name, application.cinema_code)
+
+        print(application.cinema_address)
+        print(application.cinema_address.sheng_s)
 
 # Set
     集合:
