@@ -370,7 +370,37 @@
     8. df.index                       显示DataFrame的行索引
 
     9. df.columns                     显示DataFrame的列索引
+    
+    10. df.info()                     查看数据的信息 列出每列的信息
+                                      字段过多，超过pandas的默认显示数量时，显示就给有缺失
 
+                                      pd.get_option("max_info_columns")  默认显示数量信息
+
+                                      pd.options.display.max_info_columns = 200  # 设置info中信息显示数量为200
+## DataFrame 日期转换
+
+    to_datetime
+
+    data = {
+        "影院编码": [15010971, 12040771],
+        "影院名称": ['CGV星聚汇影城呼和浩特中山店', 'CGV影城天津黄河道店'],
+        "开业时间": [20210324, 20210325]
+    }
+
+    df = pd.DataFrame(data)
+
+    # 转换时间
+
+    df["open_date"] = pd.to_datetime(df["开业时间"], format="%Y%m%d")
+
+    # 提取月初日期
+
+    df["open_date_f"] = df["open_date"].astype("datetime64[M]")
+
+    # 提取年份   月：dt.month  日：dt.day
+    df["open_year"] = df["open_date"].dt.year
+
+    print(df)
 
 ## DataFrame的迭代
 
