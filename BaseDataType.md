@@ -668,7 +668,7 @@
                     print(n, 'is a prime number')
 
 # 交叉排序
- def cross_sort():
+    def cross_sort():
         """
             交叉排序
 
