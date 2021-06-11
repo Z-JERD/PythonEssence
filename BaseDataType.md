@@ -667,5 +667,93 @@
                 else:
                     print(n, 'is a prime number')
 
+# 交叉排序
+ def cross_sort():
+        """
+            交叉排序
 
+        两个列表数据升序排列，相同的数据排在一行，其他的置空
+
+        EX：
+            li_a = [40, 42, 42]
+            li_b = [40, 40, 42]
+
+            排列如下：
+
+                40                  40
+                空                  40
+                42                  42
+                42                  空
+
+        EX2：
+            li_a = [40, 42, 42, 50]
+            li_b = [20, 30, 40]
+
+            排列如下：
+                空                  20
+                空                  30
+                40                  40
+                42                  空
+                42                  空
+                50                  空
+
+        EX3：
+            li_a = [40, 42, 42]
+            li_b = [41, 50]
+
+            排列如下：
+                40                  空
+                空                  41
+                42                  空
+                42                  空
+                空                  50
+        """
+
+        li_a = [40, 42, 42, 48, 49, 50]
+        li_b = [42, 47, 80, 90]
+
+        res = []
+
+        for m in li_a:
+
+            if not li_b:
+                res.append((m, None))
+                continue
+
+            flag = True
+
+            while flag:
+
+                n = li_b[0]
+
+                if m == n:
+
+                    res.append((m, n))
+                    li_b.remove(n)
+
+                    flag = False
+
+                elif m < n:
+
+                    res.append((m, None))
+                    flag = False
+
+                else:
+
+                    res.append((None, n))
+                    li_b.remove(n)
+
+                    if not li_b:
+
+                        res.append((m, None))
+
+                        flag = False
+
+        if li_b:
+            for n in li_b:
+                res.append((None, n))
+
+        print(res)
+
+        return
 
